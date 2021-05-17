@@ -1,0 +1,119 @@
+﻿@model List<TestPlatfom.BLL.DTO.UserModel>;
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="~/css/courses.css" asp-append-version="true" />
+    <link href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006288/BBBootstrap/choices.min.css?version=7.0.0">
+    <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+    <script src="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006273/BBBootstrap/choices.min.js?version=7.0.0"></script>
+</head>
+<body>
+
+    <link rel="stylesheet" href="~/css/search_user_panel.css">
+    <div class="wrapper">
+        <div class="header">
+            <div class="search_box">
+                <i class="fas fa-search"></i>
+                <input class="form-control-plaintext" type="text" id="search_input" placeholder="Search..." />
+            </div>
+            <a asp-action="Up" asp-controller="SuperAdmin">Add New User</a>
+            <input type="button" id="btnSave" value="Save Changes" />
+        </div>
+    </div>
+    <table class="table table-hover" id="tblUsers">
+        <thead class="thead-dark">
+            <tr>
+                <th>Email</th>
+                <th>Full name</th>
+                <th>Login</th>
+                <th>Role</th>
+                <th>Active User</th>
+            </tr>
+        </thead>
+        <tbody id="UsersTable">
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <tr>
+                    <th>
+                        <label hidden="hidden">@Model[i].Email</label>
+                        <input type="text" asp-for="@Model[i].Email" value="@Model[i].Email" />
+                    </th>
+                    <th>
+                        <label hidden="hidden">@Model[i].Fullname</label>
+                        <input type="text" asp-for="@Model[i].Fullname" value="@Model[i].Fullname" />
+                    </th>
+                    <th>
+                        <label hidden="hidden">@Model[i].UserName</label>
+                        <input type="text" asp-for="@Model[i].UserName" value="@Model[i].UserName" />
+                    </th>
+                    <th>
+                        <label hidden="hidden">@Model[i].Role</label>
+                        <input asp-for="@Model[i].Role" class="form-control" list="groups" placeholder="Choose a role">
+                        <datalist id="groups">
+                            @if (Model != null)
+                            {
+                                @foreach (var elem in Enum.GetValues(typeof(Roles)))
+                                {
+                                    <option value=@elem />
+                                }
+                            }
+                        </datalist>
+                    </th>
+                    <th>
+                        <label hidden="hidden">@Model[i].IsActive</label>
+                        <input type="checkbox" asp-for="@Model[i].IsActive" checked="@Model[i].IsActive.ToString()" />
+                        <p>press to activate</p>
+                    </th>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <script>
+
+
+
+        $(document).ready(function () {
+            $("#search_input").on("keyup", function () {
+                var searchRes = $(this).val().toLowerCase();
+                console.log(searchRes);
+                $("#UsersTable tr").filter(function () {
+                    console.log($(this).text());
+                    $(this).toggle($(this).text().toLowerCase().indexOf(searchRes) > -1);
+                });
+            });
+        });
+
+        $("body").on("click", "#btnSave", function () {
+            var customers = new Array();
+            $("#tblUsers TBODY TR").each(function () {
+                var row = $(this);
+                var customer = {};
+
+                customer.Email = row.find("TH").find("input").eq(0).val();
+                var fullname = row.find("TH").find("input").eq(1).val().split(" ");
+                customer.Name = fullname[0];
+                customer.SurName = fullname[1];
+                customer.Fullname = fullname;
+                customer.UserName = row.find("TH").find("input").eq(2).val();
+                customer.Role = row.find("TH").find("input").eq(3).val();
+                customer.isActive = row.find("TH").find("input").eq(4).prop("checked");
+                customers.push(customer);
+            });
+
+            $.ajax({
+                type: "POST",
+                url: "/SuperAdmin/UpdateUsers",
+                data: { "singUpAdminModel": customers },
+                success: function (res) {
+                    if (res) {
+                        alert("users was successfully update");
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

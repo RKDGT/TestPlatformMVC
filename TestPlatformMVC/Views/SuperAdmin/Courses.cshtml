@@ -1,0 +1,80 @@
+﻿@model List<TestPlatfom.BLL.DTO.CoursesModel>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="~/css/courses.css" asp-append-version="true" />
+    <link href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006288/BBBootstrap/choices.min.css?version=7.0.0">
+    <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+    <script src="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006273/BBBootstrap/choices.min.js?version=7.0.0"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+</head>
+<body>
+    <link rel="stylesheet" href="~/css/search_user_panel.css">
+    <div class="wrapper">
+        <div class="header">
+            <div class="search_box">
+                <input class="form-control-plaintext" type="text" id="search_input" placeholder="&#xF002; Search" style="font-family:Arial, FontAwesome" />
+            </div>
+            <button type="button">
+                <a asp-action="CreateCourses" asp-controller="SuperAdmin">Add New Course</a>
+            </button>
+            <button asp-action="UpdateUsers" asp-controller="SuperAdmin">
+                Edit
+            </button>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <tbody id="CoursesList">
+            @if (Model != null)
+            {
+                @foreach (var course in Model)
+                {
+                    <tr>
+                        <th class="courses-cards">
+                            <h2> @course.Name </h2>
+                            <div class="courses-cards-main-info">
+                                @if (course.ImgPath != null)
+                                {
+                                    <img src="~/images/@course.ImgPath" height="100" width="100" alt="Course" />
+                                }
+                                else
+                                {
+                                    <img src="~/images/No_image.png" alt="Course" />
+                                }
+                                <p> @course.Description </p>
+                            </div>
+                            <div class="courses-cards-footer">
+                                <p> @course.Owner </p>
+                                <p> @course.Start.ToShortDateString() </p>
+                                <p> @course.Finish.ToShortDateString() </p>
+                                <a id="redirectToCourseId" data-topost-name="@course.Name">Go to course...</a>
+                            </div>
+                        </th>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <script>
+        $(document).ready(function () {
+            $("#search_input").on("keyup", function () {
+                var searchRes = $(this).val().toLowerCase();
+                $("#CoursesList tr").filter(function () {
+                    console.log($(this).text());
+                    $(this).toggle($(this).text().toLowerCase().indexOf(searchRes) > -1);
+                });
+            });
+        });
+        $("#redirectToCourseId").on("click", function (e) {
+            console.log($(e.currentTarget).data('topost-img'));
+
+            window.location.href = "/SuperAdmin/Course" + "?" + $(e.currentTarget).data('topost-name');
+        });
+
+    </script>
+</body>
+</html>
+

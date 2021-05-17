@@ -1,0 +1,206 @@
+﻿@inject Microsoft.AspNetCore.Identity.SignInManager<TestPlatform.DAL.Identity.User> signInManager
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TestPlatform</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <section id="nav-bar">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index"><i class="fas fa-chalkboard-teacher" aria-hidden="true"></i> TestPlatform</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarText">
+                    <ul class="navbar-nav ml-0">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">HOME</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Contact">CONTACT</a>
+                        </li>
+                        @if (!signInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Courses">COURSES</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("SuperAdmin"))
+                        {
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="SuperAdmin" asp-action="Courses">COURSES</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="SuperAdmin" asp-action="Users">USERS</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="SuperAdmin" asp-action="Journals">JOURNALS</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Courses">COURSES</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Users">USERS</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Journals">JOURNALS</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Mentor"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Mentor" asp-action="Courses">COURSES</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Mentor" asp-action="Students">STUDENTS</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Mentor" asp-action="Journals">JOURNALS</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Lector"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Lector" asp-action="Courses">COURSES</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Lector" asp-action="Students">STUDENTS</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Lector" asp-action="Journals">JOURNALS</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Student"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Student" asp-action="Courses">COURSES</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Student" asp-action="Journal">JOURNAL</a>
+                            </li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav ml-auto">
+                        @if (!signInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="SignInUpOut" asp-action="In">SIGN IN</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="SignInUpOut" asp-action="Up">SIGN UP</a>
+                            </li>
+                        }
+                        @if (signInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="far fa-user"></i> @User.Identity.Name
+                                </a>
+                                <div class="dropdown-menu bg-dark" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" asp-controller="Home" asp-action="Profile"><i class="far fa-id-badge"></i> Profile</a>
+                                    <a class="dropdown-item" asp-controller="SignInUpOut" asp-action="Out"><i class="fas fa-sign-out-alt"></i> Log out</a>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </nav>
+        </section>
+    </header>
+
+
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+
+    <footer class="border-top footer text-muted">
+        <div class="footer-container">
+            <div class="footer-links">
+                <div class="footer-link-wrapper">
+                    <div class="footer-link-items">
+                        <h2>Navigation</h2>
+                        <a asp-controller="Index" asp-action="Index">Home</a>
+                        <a asp-controller="Index" asp-action="Contact">Contact</a>
+                    </div>
+                </div>
+                <div class="footer-link-wrapper">
+                    <div class="footer-link-items">
+                        <h2>Your account</h2>
+                        <a asp-controller="SignUpInOut" asp-action="In" data-toggle="modal" data-target="#loginModal">Sign in</a>
+                        <a asp-controller="SignUpInOut" asp-action="Up" data-toggle="modal" data-target="#logupModal">Sign up</a>
+                    </div>
+                </div>
+                <div class="footer-link-wrapper">
+                    <div class="footer-link-items">
+                        <h2>Contacts</h2>
+                        <p class="footer-text"><i class="fa fa-phone"></i> 0xx xxx xxxx</p>
+                        <p class="footer-text"><i class="fa fa-map-marker"></i> str, XX</p>
+                        <p class="footer-text"><i class="fa fa-envelope"></i> contact@gmail.com</p>
+                    </div>
+                </div>
+                <div class="footer-link-wrapper">
+                    <div class="footer-link-items">
+                        <h2>Social Media</h2>
+                        <a href="">Instagram</a>
+                        <a href="">Facebook</a>
+                        <a href="">Youtube</a>
+                        <a href="">Twitter</a>
+                    </div>
+                </div>
+            </div>
+            <section class="social-media">
+                <div class="social-media-wrap">
+                    <div class="social-logo">
+                        <a asp-area="" asp-controller="Index" asp-action="Index" class="footer-logo">
+                            <i class="fas fa-chalkboard-teacher" aria-hidden="true"></i>
+                            TestPlatform
+                        </a>
+                    </div>
+                    <small class="website-rights">TestPlatform © 2021</small>
+                    <div class="social-icons">
+                        <a class="social-icon-link" href="" target="_blank" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a class="social-icon-link" href="" target="_blank" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a class="social-icon-link" href="" target="_blank" aria-label="Youtube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a class="social-icon-link" href="" target="_blank" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/jquery.validate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

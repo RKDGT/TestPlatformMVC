@@ -1,0 +1,274 @@
+﻿@model TestPlatfom.BLL.DTO.CourseModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="~/css/courses.css" asp-append-version="true" />
+    <link href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006288/BBBootstrap/choices.min.css?version=7.0.0">
+    <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+    <script src="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006273/BBBootstrap/choices.min.js?version=7.0.0"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+</head>
+<body>
+
+    <link rel="stylesheet" href="~/css/search_user_panel.css">
+    <div class="wrapper">
+        <div class="header">
+            <img class="d-block w-100" src="https://business.edx.org/hubfs/Imported_Blog_Media/Untitled-design-7-Nov-12-2020-07-24-46-69-PM.png" alt="First slide">
+            <div class="carousel-caption d-none d-md-block">
+                <h5 id="nameOfCourseToShowId" />
+                <h5 id="nameOfCourseHiddenId" hidden />
+                <p>
+                    One day, all your hard work will pay off
+                </p>
+            </div>
+        </div>
+        <p>@Model.DescriptionOfCourse</p>
+    </div>
+    <div class="search_box">
+        <input class="form-control-plaintext" type="text" id="search_input" placeholder="&#xF002; Search by them..." style="font-family:Arial, FontAwesome" />
+        <a href="#editCoursesModal" class="btn btn-primary a-btn-slide-text open-editCoursesModal" data-toggle="modal" data-target="#editCoursesModal">
+            <i class="far fa-edit"></i>
+            <span><strong>Add new content</strong></span>
+        </a>
+    </div>
+
+    <div class="modal fade open-editCoursesModal" id="editCoursesModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header border-bottom-0">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-title text-center">
+                        <h4>Add new Content</h4>
+                    </div>
+                    <div class="d-flex flex-column text-center">
+                        <form>
+                            <input id="idEditId" hidden />
+                            <div class="form-group">
+                                <button type="button" id="markLikeHyperLinkId" class="" title="click to mark higlighed text like link [--'link'||'how to show on page'--]">
+                                    <i class="fas fa-link"></i>
+                                </button>
+                                <button type="button" id="unmarkLikeHyperLinkId" class="" title="click to mark hyper text">
+                                    <i class="fas fa-unlink"></i>
+                                </button>
+                                <br />
+                                <label class="col-form-label">Enter topic of new informaition:</label>
+                                <textarea type="text" class="form-control" style="white-space: pre-wrap;" id="topicId" name="coursesssId"></textarea>
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="photo" class="col-form-label">Enter description? additional information, links:</label>
+                                <textarea type="text" class="form-control" id="desctiptionId" style="white-space: pre-wrap;" name="pictureId"></textarea>
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="group" class="col-form-label">Upload files with theory:</label>
+                                <div class="row d-flex mt-100">
+                                    <div class="custom-file" id="ajax_image'">
+                                        <input type="file" class="form-control custom-file-input" id="fileInput" accept="image/*,video/mp4,video/x-m4v,video/*,.xlsx, .xls, .csv,.txt,.doc,.docx,.pdf,.zip,.rar,.7zip,.srt" multiple />
+                                        <lable class="custom-file-label" itemid="listOfFIlesId">The max allowed file size is 2mb</lable>
+                                    </div>
+                                    <table class="table" id="FilesList" style="visibility:hidden">
+                                        <tr>
+                                            <th />
+                                            <th />
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <button type="button" id="btnupload" class="btnSubmit">Add new them</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <tbody id="CoursesList">
+            @if (Model.AdditionalInform != null)
+            {
+                @foreach (var course in Model.AdditionalInform)
+                {
+                    <tr>
+                        <th>
+                            <div>
+                                <h2> @course.Topic </h2>
+                                <a onclick="redirectToCreateTest(@course.Id)" id="clipCreateTestId" class="" title="click to create test to this paragraph of course">
+                                    <i class="fas fa-paperclip"></i>
+                                </a>
+                            </div>
+                            @if (course.Description != null)
+                            {
+                                @Html.Raw(course.Description)
+                                <br />
+                            }
+                            @if (course.FileNames != null)
+                            {
+                                foreach (var file in course.FileNames)
+                                {
+                                    <a href="/SuperAdmin/DownloadFile?@Model.NameOfCourse?@course.Topic?@file"><i class="far fa-file"></i> @Html.Raw(file.Split("_")[1])</a> <br />
+                                }
+                            }
+                        </th>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <script>
+
+        var formdata = new FormData();
+        $(document).ready(function () {
+            $("#clipCreateTestId").on("click",);
+            $("#fileInput").on("change", function () {
+                var fileInput = document.getElementById('fileInput');
+                for (i = 0; i < fileInput.files.length; i++) {
+
+                    var sfilename = fileInput.files[i].name;
+                    let srandomid = Math.random().toString(36).substring(7);
+
+                    formdata.append(sfilename, fileInput.files[i]);
+
+                    var markup = "<tr id='" + srandomid + "'><td>" + sfilename + "</td><td><a href='#' onclick='DeleteFile(\"" + srandomid + "\",\"" + sfilename + "\")'><i class='far fa-times-circle'></i></a></td></tr>";
+                    $("#FilesList tbody").append(markup);
+
+                }
+
+                chkatchtbl();
+            });
+
+            $("#btnupload").click(function () {
+                formdata.append('NemeOfCourse', $("#nameOfCourseHiddenId").text());
+                formdata.append('topic', $('#topicId').val());
+                formdata.append('description', $('#desctiptionId').val());
+                for (var pair of formdata.entries()) {
+                    console.log(pair[0] + ', ' + pair[1] + ', ', pair[2]);
+                }
+                $(this).addClass("active");
+                $.ajax({
+                    url: '/SuperAdmin/PostTheoryForCourse',
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    data: formdata,
+                    async: false,
+                    success: function (result) {
+                        console.log(result);
+                        if (result == true) {
+                            $("#btnupload").addClass("successed");
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
+                        } else if (result == false) {
+                            $("#btnupload").addClass("failed");
+                            formData = new FormData();
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
+                        }
+                    },
+                    error: function (err) {
+                        $("#btnupload").addClass("failed");
+                        formData = new FormData();
+                    }
+                });
+            });
+            $("#nameOfCourseToShowId").text(window.location.href.split("?")[1].replaceAll("%20", " ").slice(0, 25) + "...");
+            $("#nameOfCourseHiddenId").text(window.location.href.split("?")[1]);
+            $("#search_input").on("keyup", function () {
+                var searchRes = $(this).val().toLowerCase();
+                $("#CoursesList tr").filter(function () {
+                    console.log($(this).text());
+                    $(this).toggle($(this).text().toLowerCase().indexOf(searchRes) > -1);
+                });
+            });
+            $(".custom-file-input").on("change", function () {
+                var files = $(this)[0].files;
+                var rowToOut = "";
+                for (var i = 0; i < files.length; i++) {
+                    rowToOut += files[i].name + ", ";
+                }
+                if (rowToOut != "") {
+                    if (rowToOut.length < 40) {
+                        $(this).next(".custom-file-label").html(rowToOut);
+                    } else {
+                        $(this).next(".custom-file-label").html(rowToOut.slice(0, 40) + "...");
+                    }
+
+                } else {
+                    $(this).next(".custom-file-label").html("The max allowed file size is 2mb");
+                }
+            });
+
+            $("#markLikeHyperLinkId").on('click', function () {
+                var text = document.getElementById("topicId");
+                var len = text.value.length;
+                var start = text.selectionStart;
+                var end = text.selectionEnd;
+                var sel = text.value.substring(start, end);
+                if (sel.replace(/\s/g, '').length != 0) {
+                    var replace = '[--' + sel + '|' + sel + '--]';
+                    text.value = text.value.substring(0, start) + replace + text.value.substring(end, len);
+                }
+
+                text = document.getElementById("desctiptionId");
+                len = text.value.length;
+                start = text.selectionStart;
+                end = text.selectionEnd;
+                sel = text.value.substring(start, end);
+                if (sel.replace(/\s/g, '').length != 0) {
+                    var replace = '[--' + sel + '|' + sel + '--]';
+                    text.value = text.value.substring(0, start) + replace + text.value.substring(end, len);
+                }
+            });
+
+            $("#unmarkLikeHyperLinkId").on('click', function () {
+                var text = document.getElementById("topicId");
+                var len = text.value.length;
+                var start = text.selectionStart;
+                var end = text.selectionEnd;
+                var sel = text.value.substring(start, end);
+                if (sel.replace(/\s/g, '').length != 0) {
+                    var replace = sel.split("|")[0];
+                    replace = replace.replace("[--", "");
+                    text.value = text.value.substring(0, start) + replace + text.value.substring(end, len);
+                }
+
+                text = document.getElementById("desctiptionId");
+                len = text.value.length;
+                start = text.selectionStart;
+                end = text.selectionEnd;
+                sel = text.value.substring(start, end);
+                if (sel.replace(/\s/g, '').length != 0) {
+                    var replace = sel.split("|")[0];
+                    replace = replace.replace("[--", "");
+                    text.value = text.value.substring(0, start) + replace + text.value.substring(end, len);
+                }
+            });
+        });
+
+        function redirectToCreateTest (id) {
+            window.location.href = "/SuperAdmin/CreateTestForCourse" + "?" + id;
+        }
+        function DeleteFile(Fileid, FileName) {
+            formdata.delete(FileName)
+            $("#" + Fileid).remove();
+            chkatchtbl();
+        }
+        function chkatchtbl() {
+            if ($('#FilesList tr').length > 1) {
+                $("#FilesList").css("visibility", "visible");
+            } else {
+                $("#FilesList").css("visibility", "hidden");
+            }
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+﻿.selector {
+    position: fixed;
+    top: 110px;
+    left: 0;
+    width: 100%;
+}
+
+textarea {
+    width: 200px;
+    height: 60px;
+    line-height:15px;
+    min-width: 200px;
+    max-width: 300px;
+    transition: width 0.25s;
+    resize:none;
+    overflow:hidden;
+}

@@ -1,0 +1,93 @@
+﻿@model TestPlatfom.BLL.DTO.CoursesModel
+@{
+    ViewData["Title"] = "Registration";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="~/css/courses.css" asp-append-version="true" />
+    <link href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006288/BBBootstrap/choices.min.css?version=7.0.0">
+    <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+    <script src="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006273/BBBootstrap/choices.min.js?version=7.0.0"></script>
+</head>
+<body>
+    <h1>Sign Up</h1>
+
+    <h4>Users</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form enctype="multipart/form-data" asp-action="Registration">
+                <div class="form-group">
+                    <input asp-for="@Model.Name" class="form-control" placeholder="Enter name of subject" />
+                    <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="@Model.Description" class="form-control" placeholder="Enter some decription" />
+                    <span asp-validation-for="@Model.Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div class="custom-file">
+                        <input asp-for="@Model.Img" type="file" class="form-control custom-file-input"  accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff" />
+                        <lable class="custom-file-label">Chooise image of course...</lable>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input asp-for="@Model.IsActive" type="checkbox" />
+                    <p>press to activate</p>
+                    <span asp-validation-for="@Model.IsActive" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="@Model.IsPublic" type="checkbox" />
+                    <p>press if it`s public course</p>
+                    <span asp-validation-for="@Model.IsPublic" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="@Model.Owner" class="form-control" list="groups" placeholder="Choose a owner of course">
+                    <span asp-validation-for="@Model.Owner" class="text-danger"></span>
+                    <datalist id="groups">
+                        @foreach (var elem in (List<string>)ViewData["Lectors"])
+                        {
+                            <option value=@elem>@elem</option>
+                        }
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <input id="dateOfStartId" asp-for="@Model.Start" class="form-control" type="date" min="" />
+                    <span asp-validation-for="@Model.Start" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input id="dateOfFinishId" asp-for="@Model.Finish" class="form-control" type="date" min="" />
+                    <span asp-validation-for="@Model.Finish" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-controller="SuperAdmin" asp-action="Courses" type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Courses" asp-controller="SuperAdmin">Back to List</a>
+    </div>
+
+
+    <script>
+        $(document).ready(function () {
+            $(".custom-file-input").on("change", function (){
+                var fileName = $(this).val().split("\\").pop();
+                $(this).next(".custom-file-label").html(fileName)
+            }); 
+            document.getElementById("dateOfStartId").setAttribute("min", new Date().toISOString().split("T")[0]);
+            document.getElementById("dateOfFinishId").setAttribute("min", new Date().toISOString().split("T")[0]);
+        });
+
+    </script>
+</body>
+</html>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

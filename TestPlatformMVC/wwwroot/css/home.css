@@ -1,0 +1,36 @@
+﻿.about {
+    width: 80%;
+    margin: auto;
+    text-align: center;
+    padding-top: 70px;
+}
+
+.about p {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.about-col {
+    flex-basis: 31%;
+    border-radius: 10px;
+    margin-bottom: 5%;
+    text-align: left;
+    padding-left: 2rem;
+}
+
+.about-col img {
+    width: 270px;
+    height: 200px;
+    border-radius: 10px;
+}
+
+.about-col p {
+    padding: 0;
+}
+
+.about-col h3 {
+    margin-top: 16px;
+    margin-bottom: 15px;
+    text-align: left;
+    font-size: 22px;
+}

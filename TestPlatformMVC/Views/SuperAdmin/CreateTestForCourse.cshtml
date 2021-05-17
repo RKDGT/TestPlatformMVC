@@ -1,0 +1,240 @@
+﻿@model TestPlatfom.BLL.DTO.CoursesModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="~/css/courses.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/create_test.css" asp-append-version="true" />
+    <link href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006288/BBBootstrap/choices.min.css?version=7.0.0">
+    <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+    <script src="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006273/BBBootstrap/choices.min.js?version=7.0.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+</head>
+<body>
+    <h1>Create test</h1>
+    <hr />
+    <div class="row">
+        <div class="modal fade" id="createTestModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Delete course</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-modal">
+                        Pleace check all change before save?
+                        <label id="idDeleteId" hidden />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button id="saveTestBtnId" type="button" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="selector">
+                <button type="button" id="clipInfoId" class="btn-submit" title="click to mark tekst like link">
+                    <i class="fas fa-link"></i>
+                </button>
+                <button type="button" id="clipInfoId" class="btn-submit" title="click to upload image">
+                    <i class="far fa-image"></i>
+                </button>
+                <button type="button" id="clipInfoId" class="btn-submit" title="click to upload file">
+                    <i class="far fa-file"></i>
+                </button>
+                <button type="button" id="addNewItemOfTestId" class="btn-submit" title="click to add new item of test ">
+                    <i class="far fa-plus-square"></i>
+                </button>
+            </div>
+            <form enctype="multipart/form-data" asp-action="Registration">
+                <div class="form-group">
+                    <textarea class="form-control" id="titleOFTestId" placeholder="Enter title of test" data-autosize-input="{ 'space': 40 }"></textarea>
+                    <span class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <textarea class="form-control" id="descriptionToTestId" placeholder="Enter some decription" data-autosize-input="{ 'space': 40 }"></textarea>
+                    <span class="text-danger"></span>
+                </div>
+                <ul class="items-list" id="listOfItemsId">
+                </ul>
+                @*<a id="createTestId">Create test</a>*@
+                <a class="btn btn-primary a-btn-slide-text open-deleteCourse" data-toggle="modal" data-target="#deleteCoursesModal" id="createTestId">
+                    <span><strong>Create test</strong></span>
+                </a>
+            </form>
+        </div>
+    </div>
+    <div>
+        <a asp-action="Courses" asp-controller="SuperAdmin">Back to List</a>
+    </div>
+
+
+
+    <script>
+
+        let preBuild = 0;
+        let countOfQuestionBlock = 0;
+        let answerPair = 0;
+        let formData = new FormData();
+        let questionsAnswers = [];
+        $(document).ready(function () {
+            setNewQuestionBlock();
+
+            $("#addNewItemOfTestId").on("click", function () {
+                setNewQuestionBlock();
+            });
+
+            $("#createTestId").on("click", function () {
+                const listTypeOfQuestion = $("#listOfItemsId").find("li");
+
+                for (var quest of listTypeOfQuestion) {
+                    const selectedBox = quest.getElementsByTagName("select")[0];
+                    const questionAnswersChecks = quest.getElementsByTagName("input");
+                    const selected = selectedBox.options[selectedBox.selectedIndex].value;
+                    questionsAnswers.push(selected + "|" + questionAnswersChecks[0].value + '---main---')
+                    if (selected === 'Flags' || selected === 'Point') {
+                        for (let i = 1; i < questionAnswersChecks.length; i+=2) {
+                            questionsAnswers.push(questionAnswersChecks[i].checked + "|" + questionAnswersChecks[i + 1].value + '|n|');
+                        }
+
+                    } else {
+                        for (let i = 1; i < questionAnswersChecks.length; i++) {
+                            questionsAnswers.push(questionAnswersChecks[i].value + "|n|")
+                        }
+                    }
+                    questionsAnswers.push('---end---');
+                }
+                $("#createTestModal").modal("show");
+            });
+        });
+
+        function setNewQuestionBlock() {
+            const listItems = $("#listOfItemsId");
+            listItems.append(`<li class='item-test' id='` + preBuild +`'>
+                        <div class='item-test-header'>
+                            <div class='ml-0'>
+                                <button type='button' id='convertToLinkId' class='btn-submit' title='click to mark tekst like link'>
+                                    <i class='fas fa-link'></i>
+                                </button>
+                                <button type='button' id='uploadFileId' class='btn-submit' title='click to upload file'>
+                                    <i class='far fa-file'></i>
+                                </button>
+                                <a type='button' id='addNewAnswerToQuestionId' onclick='setBodyOnTypeChanges(\"`+ true + `\",\"` + preBuild +`\")' class='btn-submit' title='click to add answer for question'>
+                                    <i class='far fa-plus-square'></i>
+                                </a>
+                                <a type='button' id='addNewAnswerToQuestionId' onclick='removeQuestionBlock(\"` + preBuild +`\")' class='btn-submit' title='click to add answer for question'>
+                                    <i class="far fa-trash-alt"></i>
+                                </a>
+                            </div>
+                            <div class='ml-auto'>
+                                    <select id='typeOfQuestionId`+ preBuild + `' onchange='setBodyOnTypeChanges(\"` + false + `\",\"` + preBuild +`\")'>
+                                    @foreach (var elem in Enum.GetValues(typeof(QuestionType)))
+                                    {
+                                        <option value=@elem>@elem</option>
+                                    }
+                                    </select>
+                                </select>
+                            </div>
+                        </div>
+                        <div class='item-test-body' id='bodyAnswersId`+ preBuild +`'> </div>
+                </li>`);
+
+            setBodyOnTypeChanges(false, preBuild);
+            preBuild += 1;
+
+        };
+
+        function removeQuestionBlock(id) {
+            $("#" + id).remove();
+        }
+
+        function setBodyOnTypeChanges(toWrite, id) {
+            var type = $('#typeOfQuestionId' + id).children("option:selected").val();
+            const body = $("#bodyAnswersId" + id);
+            let newHtml = "";
+            console.log(toWrite);
+            if (toWrite == 'true') {
+                newHtml = body.html();
+            } else {
+                newHtml = "<input id='question" + id + "' placeholder='Pleace enter your question' required/> <br />";
+            }
+            if (type == "Flags") {
+                newHtml += "<input type='checkbox' id='answer" + answerPair + "' name='" + id+"'>";
+            }
+            if (type == "Point") {
+                newHtml += "<input type='radio' id='answer" + answerPair + "' name='" + id +"'>";
+            }
+            newHtml += "<input for='answer" + answerPair + "' placeholder='enter answer' required/> <br />";
+            //newHtml += "<textarea placeholder='Autosize' data-autosize-input='{ 'space': 40 }'></textarea> <br />";
+            answerPair += 1;
+            body.html(newHtml);
+        }
+
+        $(".items-list").sortable({
+            placeholder: 'slide-placeholder',
+            axis: "y",
+            revert: 150,
+            start: function (e, ui) {
+                placeholderHeight = ui.item.outerHeight();
+                ui.placeholder.height(placeholderHeight + 15);
+                $('<div class="slide-placeholder-animator" data-height="' + placeholderHeight + '"></div>').insertAfter(ui.placeholder);
+            },
+            change: function (event, ui) {
+                ui.placeholder.stop().height(0).animate({
+                    height: ui.item.outerHeight() + 15
+                }, 300);
+                placeholderAnimatorHeight = parseInt($(".slide-placeholder-animator").attr("data-height"));
+                $(".slide-placeholder-animator").stop().height(placeholderAnimatorHeight + 15).animate({
+                    height: 0
+                }, 300, function () {
+                    $(this).remove();
+                    placeholderHeight = ui.item.outerHeight();
+                    $('<div class="slide-placeholder-animator" data-height="' + placeholderHeight + '"></div>').insertAfter(ui.placeholder);
+                });
+            },
+            stop: function (e, ui) {
+                $(".slide-placeholder-animator").remove();
+            },
+        });
+        $('textarea').on({
+            input: function () {
+                var totalHeight = $(this).prop('scrollHeight') - parseInt($(this).css('padding-top')) - parseInt($(this).css('padding-bottom'));
+                $(this).css({ 'height': totalHeight });
+            }
+        });
+
+        $("#saveTestBtnId").on('click', function () {
+            formData.append("AdditionalInfo", window.location.href.split("https://localhost:44333/SuperAdmin/CreateTestForCourse?")[1])
+            formData.append("Topic", document.getElementById("titleOFTestId").value);
+            formData.append("Description", document.getElementById("descriptionToTestId").value);
+            formData.append("AnswersForTests", questionsAnswers.join(""));
+            $.ajax({
+                url: '/SuperAdmin/PostTestForCourse',
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: formData,
+                async: false,
+                success: function (result) {
+                    if (result != "") {
+                        alert(result);
+                    }
+                },
+                error: function (err) {
+                    alert("The max allowed file size is 2mb please check uploaded files....");
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
